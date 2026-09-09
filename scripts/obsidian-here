@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Capture the destination before moving or focusing any window.
+workspace=$(hyprctl activeworkspace -j | jq -er '.id')
+window=$(hyprctl clients -j | jq -r '
+  [.[] | select(.mapped and
+    ((.class | ascii_downcase) == "md.obsidian.obsidian" or
+     (.class | ascii_downcase) == "obsidian"))]
+  | sort_by(if (.focusHistoryID // -1) >= 0 then .focusHistoryID else 2147483647 end)
+  | .[0].address // empty
+')
+
+if [[ -z $window ]]; then
+  exec uwsm-app -- obsidian
+fi
+
+# Only interpolate validated numeric IDs and hexadecimal window addresses.
+[[ $workspace =~ ^-?[0-9]+$ && $window =~ ^0x[0-9a-fA-F]+$ ]]
+hyprctl dispatch "hl.dsp.window.move({ workspace = \"$workspace\", window = \"address:$window\", follow = false })"
+hyprctl dispatch "hl.dsp.focus({ window = \"address:$window\" })"

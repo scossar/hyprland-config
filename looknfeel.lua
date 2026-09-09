@@ -48,3 +48,9 @@
 --     column_width = 0.97,
 --   },
 -- })
+
+hl.config({
+	general = {
+		border_size = 4,
+	},
+})

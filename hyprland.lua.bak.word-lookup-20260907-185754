@@ -38,9 +38,3 @@ o.window("^com\\.scossar\\..+$", {
 	-- top right; line up with normal window top right gaps.
 	move = { "(monitor_w - window_w) - 10", "40" },
 })
-
--- Word lookup is a regular application window, floating by default.
-o.window({ class = "^org.quickshell$", title = "^Word lookup$" }, {
-  float = true,
-  center = true,
-})
