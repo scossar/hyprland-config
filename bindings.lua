@@ -42,10 +42,52 @@ o.bind("SUPER + SHIFT + RETURN", "Floating terminal", "omarchy launch terminal -
 -- Offline spelling lookup.
 o.bind("SUPER + CTRL + SHIFT + D", "Word lookup", "omarchy-shell shell toggle scossar.word-lookup")
 
--- Bring the most recently used Obsidian window here, or launch Obsidian.
--- Replaces the default launch-or-focus shortcut.
+-- Build a shortcut that brings the most recently used matching window here,
+-- or launches the application. Classes are matched exactly, ignoring case.
+local function app_here(classes, command)
+  local matches = {}
+  for _, class in ipairs(classes) do
+    matches[class:lower()] = true
+  end
+
+  return function()
+    -- Capture the destination before moving or focusing any window.
+    local workspace = hl.get_active_workspace()
+    if not workspace then return end
+    local destination = tostring(workspace.id)
+    local selected, best_rank
+
+    for _, window in ipairs(hl.get_windows()) do
+      if window.mapped and matches[window.class:lower()] then
+        local rank = window.focus_history_id
+        if not rank or rank < 0 then rank = math.huge end
+        if not selected or rank < best_rank then
+          selected, best_rank = window, rank
+        end
+      end
+    end
+
+    if not selected then
+      hl.exec_cmd(o.launch(command))
+      return
+    end
+
+    hl.dispatch(hl.dsp.window.move({
+      workspace = destination,
+      window = selected,
+      follow = false,
+    }))
+    hl.dispatch(hl.dsp.focus({ window = selected }))
+  end
+end
+
+-- Replace Obsidian's launch-or-focus shortcut and ChatGPT's web-app shortcut.
 hl.unbind("SUPER + SHIFT + O")
-o.bind("SUPER + SHIFT + O", "Obsidian here", "bash ~/.config/hypr/scripts/obsidian-here")
+o.bind("SUPER + SHIFT + O", "Obsidian here",
+  app_here({ "md.obsidian.obsidian", "obsidian" }, "obsidian"))
+hl.unbind("SUPER + SHIFT + A")
+o.bind("SUPER + SHIFT + A", "ChatGPT here",
+  app_here({ "chatgpt" }, "chatgpt"))
 
 -- Move floating windows to the top corners, leaving space for the bar.
 local function move_floating_to_top(right)
