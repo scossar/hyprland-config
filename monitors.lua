@@ -27,7 +27,7 @@ end
 
 -- Cover workspaces above Omarchy's default 1-10 range, including any that
 -- already exist when the configuration is reloaded.
-for _, workspace in ipairs(hl.get_workspaces()) do
+for _, workspace in pairs(hl.get_workspaces()) do
 	bind_later_workspace_to_external(workspace)
 end
 hl.on("workspace.created", bind_later_workspace_to_external)
