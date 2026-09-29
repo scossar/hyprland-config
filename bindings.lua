@@ -125,3 +125,5 @@ end
 o.bind("SUPER + CTRL + SHIFT + LEFT", "Floating window to top left", move_floating_to_top(false))
 o.bind("SUPER + CTRL + SHIFT + RIGHT", "Floating window to top right", move_floating_to_top(true))
 o.bind("SUPER + SHIFT + H", "Hermes Desktop", "hermes-desktop")
+hl.unbind("CTRL + ALT + TAB") -- unbind pre-configured "Focus on next monitor" binding
+o.bind("SUPER + M", "Focus on next monitor", hl.dsp.focus({ monitor = "+1" }))
