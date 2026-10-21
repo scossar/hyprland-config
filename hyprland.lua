@@ -27,8 +27,8 @@ require("default.hypr.toggles")
 
 -- Vault search is a regular application window, floating by default.
 o.window({ class = "^org.quickshell$", title = "^Obsidian vault search$" }, {
-  float = true,
-  center = true,
+	float = true,
+	center = true,
 })
 
 -- this is for Tauri app development; window names are
@@ -41,6 +41,27 @@ o.window("^com\\.scossar\\..+$", {
 
 -- Word lookup is a regular application window, floating by default.
 o.window({ class = "^org.quickshell$", title = "^Word lookup$" }, {
-  float = true,
-  center = true,
+	float = true,
+	center = true,
 })
+
+-- With three tiled windows, give the centered master and both sides equal width.
+hl.config({
+	master = {
+		mfact = 1 / 3,
+		-- Put the extra slave window in the right column.
+		-- center_master_fallback = "right",
+	},
+})
+
+hl.workspace_rule({
+	workspace = "2",
+	layout = "master",
+	layout_opts = { orientation = "center" },
+})
+
+-- With two tiled windows, keep the one-third master on the left.
+-- hl.workspace_rule({
+-- 	workspace = "r[2-2] w[t2]",
+-- 	layout_opts = { orientation = "left" },
+-- })
